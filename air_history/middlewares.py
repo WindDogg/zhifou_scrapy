@@ -12,7 +12,7 @@ class AreaSpiderMiddleware(object):
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--no-sandbox')
         # 指定谷歌浏览器路径
-        self.driver = webdriver.Chrome(chrome_options=chrome_options,executable_path=r'G:\GameDownload\chromedriver_win32\chromedriver.exe')
+        self.driver = webdriver.Chrome(chrome_options=chrome_options,executable_path=r'E:\1\chromedriver.exe')
         # if request.url != 'https://segmentfault.com/questions':
         #     self.driver.get(request.url)
         #     time.sleep(1)

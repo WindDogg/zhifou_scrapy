@@ -108,6 +108,6 @@ MYSQL_PASSWORD = '123456'
 # 数据库端口
 MYSQL_PORT = 3306
 # 数据库名称
-MYSQL_DBNAME = 'test'
+MYSQL_DBNAME = 'zhihu'
 # 数据库编码
 MYSQL_CHARSET = 'utf8'

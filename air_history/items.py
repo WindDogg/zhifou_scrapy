@@ -49,4 +49,14 @@ class AirHistoryItem(scrapy.Item):
 
     type = scrapy.Field()
 
+class ZhiHuItem(scrapy.Item):
+    url = scrapy.Field()
+    ask_name = scrapy.Field()
+    ask_time = scrapy.Field()
+    ask_answercount = scrapy.Field()
+    follow_count = scrapy.Field()
+    type = scrapy.Field()
+
+
+
 

@@ -129,6 +129,19 @@ class AirHistoryPipeline(object):
 
             # 把要执行的sql放入连接池
             query = self.db_pool.runInteraction(self.insert_into_vote, asynItem)
+        if type == '11':
+            myItem = {}
+            myItem["url"] = item["url"]
+            myItem["ask_name"] = item["ask_name"]
+            myItem["ask_time"] = item["ask_time"]
+            myItem["ask_answercount"] = item["ask_answercount"]
+            myItem["follow_count"] = item["follow_count"]
+            logging.warning(myItem)
+            # 对象拷贝，深拷贝  --- 这里是解决数据重复问题！！！
+            asynItem = copy.deepcopy(myItem)
+
+            # 把要执行的sql放入连接池
+            query = self.db_pool.runInteraction(self.insert_into_zhihu_ask, asynItem)
         # 如果sql执行发送错误,自动回调addErrBack()函数
         query.addErrback(self.handle_error, myItem, spider)
         return myItem
@@ -165,6 +178,12 @@ class AirHistoryPipeline(object):
         # 创建sql语句
         sql = "INSERT INTO comment_desc (question_url,comment_content,comment_vote,sfcn,comment_time) VALUES ('{}','{}','{}','{}','{}')".format(
             item['question_url'], item['comment_content'], item['comment_vote'], item['sfcn'],item['comment_time'])
+        # 执行sql语句
+        cursor.execute(sql)
+    def insert_into_zhihu_ask(self, cursor, item):
+        # 创建sql语句
+        sql = "INSERT INTO asks (url,ask_name,ask_time,ask_answercount,follow_count) VALUES ('{}','{}','{}','{}','{}')".format(
+            item['url'], item['ask_name'], item['ask_time'], item['ask_answercount'],item['follow_count'])
         # 执行sql语句
         cursor.execute(sql)
     # 错误函数
