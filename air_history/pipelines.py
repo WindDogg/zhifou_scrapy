@@ -142,6 +142,53 @@ class AirHistoryPipeline(object):
 
             # 把要执行的sql放入连接池
             query = self.db_pool.runInteraction(self.insert_into_zhihu_ask, asynItem)
+        if type == '12':
+            myItem = {}
+            myItem["url"] = item["url"]
+            myItem["title"] = item["ask_name"]
+            myItem["post_answercount"] = item["ask_answercount"]
+            myItem["follow_count"] = item["follow_count"]
+            logging.warning(myItem)
+            # 对象拷贝，深拷贝  --- 这里是解决数据重复问题！！！
+            asynItem = copy.deepcopy(myItem)
+
+            # 把要执行的sql放入连接池
+            query = self.db_pool.runInteraction(self.insert_into_zhihu_post, asynItem)
+
+        if type == '14':
+            myItem = {}
+            myItem["url"] = item["url"]
+            myItem["title"] = item["ask_name"]
+            myItem["answer_count"] = item["ask_answercount"]
+            myItem["follow_count"] = item["follow_count"]
+            logging.warning(myItem)
+            # 对象拷贝，深拷贝  --- 这里是解决数据重复问题！！！
+            asynItem = copy.deepcopy(myItem)
+
+            # 把要执行的sql放入连接池
+            query = self.db_pool.runInteraction(self.insert_into_zhihu_video, asynItem)
+
+        if type == '13':
+            myItem = {}
+            myItem["url"] = item["url"]
+            myItem["follow_count"] = item["follow_count"]
+            logging.warning(myItem)
+            # 对象拷贝，深拷贝  --- 这里是解决数据重复问题！！！
+            asynItem = copy.deepcopy(myItem)
+
+            # 把要执行的sql放入连接池
+            query = self.db_pool.runInteraction(self.update_zhihu_videos, asynItem)
+
+        if type == '15':
+            myItem = {}
+            myItem["url"] = item["url"]
+            myItem["follow_count"] = item["follow_count"]
+            myItem["ask_answercount"] = item["ask_answercount"]
+            logging.warning(myItem)
+            # 对象拷贝，深拷贝  --- 这里是解决数据重复问题！！！
+            asynItem = copy.deepcopy(myItem)
+            # 把要执行的sql放入连接池
+            query = self.db_pool.runInteraction(self.update_zhihu_focus, asynItem)
         # 如果sql执行发送错误,自动回调addErrBack()函数
         query.addErrback(self.handle_error, myItem, spider)
         return myItem
@@ -182,8 +229,35 @@ class AirHistoryPipeline(object):
         cursor.execute(sql)
     def insert_into_zhihu_ask(self, cursor, item):
         # 创建sql语句
-        sql = "INSERT INTO asks (url,ask_name,ask_time,ask_answercount,follow_count) VALUES ('{}','{}','{}','{}','{}')".format(
+        sql = "INSERT INTO asks_0707 (url,ask_name,ask_time,ask_answercount,follow_count) VALUES ('{}','{}','{}','{}','{}')".format(
             item['url'], item['ask_name'], item['ask_time'], item['ask_answercount'],item['follow_count'])
+        # 执行sql语句
+        cursor.execute(sql)
+    def insert_into_zhihu_post(self, cursor, item):
+        # 创建sql语句
+        sql = "INSERT INTO posts_0707 (url,title,post_answercount,follow_count) VALUES ('{}','{}','{}','{}')".format(
+            item['url'], item['title'],item['post_answercount'],item['follow_count'])
+        # 执行sql语句
+        cursor.execute(sql)
+
+    def insert_into_zhihu_video(self, cursor, item):
+        # 创建sql语句
+        sql = "INSERT INTO videos_0707 (url,title,answer_count,follow_count) VALUES ('{}','{}','{}','{}')".format(
+            item['url'], item['title'],item['answer_count'],item['follow_count'])
+        # 执行sql语句
+        cursor.execute(sql)
+
+    def update_zhihu_videos(self, cursor, item):
+        # 创建sql语句
+        sql = "update 0525user set videos_count='{}' where url_token='{}'".format(
+            item['follow_count'], item['url'])
+        # 执行sql语句
+        cursor.execute(sql)
+
+    def update_zhihu_focus(self, cursor, item):
+        # 创建sql语句
+        sql = "update user_0707 set focus_count='{}',videos_count='{}' where url_token='{}'".format(
+            item['follow_count'],item['ask_answercount'], item['url'])
         # 执行sql语句
         cursor.execute(sql)
     # 错误函数
