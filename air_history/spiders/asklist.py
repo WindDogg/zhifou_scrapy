@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-import pymysql
 import scrapy
+import pymysql
 from air_history.items import ZhiHuItem
 
-class ZhihuaskSpider(scrapy.Spider):
-    name = 'zhihuask'
-    allowed_domains = ['www.zhihu.com/people/F_falcon']
-    start_urls = ['http://www.zhihu.com/']
+class AsklistSpider(scrapy.Spider):
+    name = 'asklist'
+    allowed_domains = ['www.zhihu.com/people/mllh/asks']
+    start_urls = ['https://www.zhihu.com/people/mllh/asks']
+
     base_url = "https://www.zhihu.com/"
     urls = []
     pageNum = 1
@@ -24,7 +25,7 @@ class ZhihuaskSpider(scrapy.Spider):
         )
         cursor = db.cursor()
         cursor.execute(
-            'SELECT url_token FROM 0525user limit 5 ')
+            'select url_token from user_0707 where question_count>0 ')
         rows = cursor.fetchall()
         for row in rows:
             self.urls.append(row['url_token'])
@@ -36,7 +37,8 @@ class ZhihuaskSpider(scrapy.Spider):
 
     def parse_mid(self, response):
         print("获取页数")
-        question_num = int(response.xpath("//*[@id='ProfileMain']/div[1]/ul/li[4]/a/span/text()").get())
+        list = response.xpath("//*[@id='ProfileMain']/div[1]/ul/li[4]/a/span/text()").get().replace(",","")
+        question_num = int(list)
         url = response.meta['user']
         num1 = question_num // 20
         num2 = question_num % 20
@@ -62,6 +64,7 @@ class ZhihuaskSpider(scrapy.Spider):
         if type == '11':
             selectorlist = response.xpath("//div[@class='List-item']").getall()
             size = len(selectorlist)
+            print(size)
             for i in range(1, size + 1):
                 item['url'] = response.meta['user']
                 item['ask_name'] = response.xpath(
@@ -70,8 +73,8 @@ class ZhihuaskSpider(scrapy.Spider):
                 item['ask_time'] = response.xpath(
                     "//div[@class='List-item'][" + str(i) + "]/div/div/span[1]/text()").get().strip()
                 item['ask_answercount'] = response.xpath(
-                    "//div[@class='List-item'][" + str(i) + "]/div/div/span[2]/text()").get().strip()
-                item['follow_count'] =  response.xpath(
-                    "//div[@class='List-item'][" + str(i) + "]/div/div/span[3]/text()").get().strip()
+                    "//div[@class='List-item'][" + str(i) + "]/div/div/span[2]/text()").get().strip().replace(" 个回答","")
+                item['follow_count'] = response.xpath(
+                    "//div[@class='List-item'][" + str(i) + "]/div/div/span[3]/text()").get().strip().replace(" 个关注","")
                 item['type'] = type
                 yield item
