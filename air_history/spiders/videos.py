@@ -26,7 +26,7 @@ class VideosSpider(scrapy.Spider):
         )
         cursor = db.cursor()
         cursor.execute(
-            "select url_token,videos_count from user_0707 where videos_count>0")
+            "select url_token,videos_count from user_0804 where videos_count>0")
         rows = cursor.fetchall()
         for row in rows:
             self.urls.append(row)
@@ -81,19 +81,20 @@ class VideosSpider(scrapy.Spider):
                 path = "//div[@class='List-item'][" + str(i) + "]/div/h2/a/text()"
                 print(path)
                 ask = response.xpath(path).get()
-                print(ask)
-                item['ask_name'] = ask.replace(" ", "")
-                answercount = response.xpath(
-                    "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/div/button[1]/text()").get().strip()
-                follow = response.xpath(
-                    "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/div/span/button[1]/text()").get()
-                if (answercount == '添加评论'):
-                    answercount = '0'
-                item['ask_answercount'] = answercount.replace(" 条评论", "")
+                if ask is not None:
+                    print(ask)
+                    item['ask_name'] = ask.replace(" ", "")
+                    answercount = response.xpath(
+                        "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/div/button[1]/text()").get().strip()
+                    follow = response.xpath(
+                        "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/div/span/button[1]/text()").get()
+                    if (answercount == '添加评论'):
+                        answercount = '0'
+                    item['ask_answercount'] = answercount.replace(" 条评论", "")
 
-                if follow is None:
-                    follow = '0'
-                item['follow_count'] = follow.strip().replace("赞同", "")
-                item['type'] = type
-                yield item
+                    if follow is None:
+                        follow = '0'
+                    item['follow_count'] = follow.strip().replace("赞同", "")
+                    item['type'] = type
+                    yield item
 

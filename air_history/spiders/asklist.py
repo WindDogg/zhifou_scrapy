@@ -25,7 +25,7 @@ class AsklistSpider(scrapy.Spider):
         )
         cursor = db.cursor()
         cursor.execute(
-            'select url_token from user_0707 where question_count>0 ')
+            'select url_token from user_0804 where question_count>0 ')
         rows = cursor.fetchall()
         for row in rows:
             self.urls.append(row['url_token'])

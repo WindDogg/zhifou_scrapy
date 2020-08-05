@@ -27,7 +27,7 @@ class FollowedandvideoSpider(scrapy.Spider):
         )
         cursor = db.cursor()
         cursor.execute(
-            "select url_token from user_0707")
+            "select url_token from user_0804")
         rows = cursor.fetchall()
         for row in rows:
             self.urls.append(row)

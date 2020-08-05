@@ -25,7 +25,7 @@ class PostsSpider(scrapy.Spider):
         )
         cursor = db.cursor()
         cursor.execute(
-            'select url_token from user_0707 where articles_count>0  ')
+            "select url_token from user_0804 where articles_count>0")
         rows = cursor.fetchall()
         for row in rows:
             self.urls.append(row['url_token'])
@@ -74,16 +74,18 @@ class PostsSpider(scrapy.Spider):
                 print(tiaojian)
                 if tiaojian ==2:
                     answercount = response.xpath(
-                        "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[2]/button[1]/text()").get().strip()
+                        "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[2]/button[1]/text()").get()
                     follow = response.xpath(
                         "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[2]/span/button/text()").get()
                 else:
                     answercount = response.xpath(
-                        "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/button[1]/text()").get().strip()
+                        "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/button[1]/text()").get()
                     follow = response.xpath(
                         "//div[@class='List-item'][" + str(i) + "]/div/div[2]/div[3]/span/button/text()").get()
                 if(answercount=='添加评论'):
                     answercount='0'
+                if answercount is  None:
+                    answercount = '0'
                 item['ask_answercount'] = answercount.replace(" 条评论","")
 
                 if follow is  None:
